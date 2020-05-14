@@ -213,11 +213,13 @@
 				TargetAttributes = {
 					03AFB36B1992A84300A4B773 = {
 						CreatedOnToolsVersion = 6.0;
-						DevelopmentTeam = B948MFAE5C;
+						DevelopmentTeam = 34C62MZKFS;
+						LastSwiftMigration = 0830;
 					};
 					03AFB37D1992A84300A4B773 = {
 						CreatedOnToolsVersion = 6.0;
 						DevelopmentTeam = B948MFAE5C;
+						LastSwiftMigration = 0830;
 						TestTargetID = 03AFB36B1992A84300A4B773;
 					};
 				};
@@ -395,10 +397,12 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 34C62MZKFS;
 				INFOPLIST_FILE = dewdue/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = Dew;
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -409,10 +413,12 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 34C62MZKFS;
 				INFOPLIST_FILE = dewdue/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = Dew;
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -431,6 +437,7 @@
 				INFOPLIST_FILE = dewdueTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = DewTests;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Dew.app/Dew";
 			};
 			name = Debug;
@@ -446,6 +453,7 @@
 				INFOPLIST_FILE = dewdueTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = DewTests;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Dew.app/Dew";
 			};
 			name = Release;

@@ -32,10 +32,10 @@ class ViewController: UIViewController {
 	var touchStart:CGFloat = 0.0
 	var incrementMinutes = 0
 	
-	var timeNow: NSDateComponents!
-	var timeThen: NSDateComponents!
+	var timeNow: DateComponents!
+	var timeThen: DateComponents!
 	
-	var timerTouch:NSTimer!
+	var timerTouch:Timer!
     
     var touchSound:SystemSoundID = 0
     var releaseSound:SystemSoundID?
@@ -68,29 +68,29 @@ class ViewController: UIViewController {
         barSound = createBarSound()
         
 		timeUpdate()
-		var timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("timeStep"), userInfo: nil, repeats: true)
+		var timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(ViewController.timeStep), userInfo: nil, repeats: true)
 	}
 	
 	func timeUpdate()
 	{
-		let date = NSDate()
+		let date = Date()
 		
-		let calendar = NSCalendar.currentCalendar()
-		let dateFormatter = NSDateFormatter()
-		dateFormatter.timeZone = NSTimeZone()
+		let calendar = Calendar.current
+		let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")!
 		
-		timeNow = calendar.components([.Hour, .Minute, .Second] , fromDate: date)
+		timeNow = (calendar as NSCalendar).components([.hour, .minute, .second] , from: date)
 		
-		let dateFuture = NSDate(timeIntervalSinceNow: NSTimeInterval(incrementMinutes) )
-		let futureDate = dateFormatter.stringFromDate( dateFuture )
+		let dateFuture = Date(timeIntervalSinceNow: TimeInterval(incrementMinutes) )
+		let futureDate = dateFormatter.string( from: dateFuture )
 		
-		timeThen = calendar.components([.Hour, .Minute, .Second] , fromDate: dateFuture)
+		timeThen = (calendar as NSCalendar).components([.hour, .minute, .second] , from: dateFuture)
 		
 		var timeThenSecondsString = "\(timeThen.second)"
-		if( timeThen.second < 10 ){ timeThenSecondsString = "0\(timeThen.second)" }
+		if( timeThen.second! < 10 ){ timeThenSecondsString = "0\(timeThen.second)" }
 		
 		var timeThenMinutesString = "\(timeThen.minute)"
-		if( timeThen.minute < 10 ){ timeThenMinutesString = "0\(timeThen.minute)" }
+		if( timeThen.minute! < 10 ){ timeThenMinutesString = "0\(timeThen.minute)" }
 		
 		timeTargetLabel.text = "\(timeThen.hour):\(timeThenMinutesString):\(timeThenSecondsString)"
 		
@@ -142,20 +142,20 @@ class ViewController: UIViewController {
 		tileSize = self.view.frame.width/8
 		screenWidth = self.view.frame.width
 		screenHeight = self.view.frame.height
-		timeTouchView.frame = CGRectMake(tileSize, tileSize, screenWidth-(2*tileSize), screenHeight-(2*tileSize))
+		timeTouchView.frame = CGRect(x: tileSize, y: tileSize, width: screenWidth-(2*tileSize), height: screenHeight-(2*tileSize))
 		
-		pointNow.frame = CGRectMake(0, 0, 10, 10)
-		pointNow.backgroundColor = UIColor.whiteColor()
-		pointTarget.frame = CGRectMake(0, 0, 1, 1)
-		pointTarget.backgroundColor = UIColor.whiteColor()
+		pointNow.frame = CGRect(x: 0, y: 0, width: 10, height: 10)
+		pointNow.backgroundColor = UIColor.white
+		pointTarget.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+		pointTarget.backgroundColor = UIColor.white
 		
-		gridView.frame = CGRectMake(tileSize, tileSize, screenWidth - (2 * tileSize), screenHeight - (2 * tileSize) )
+		gridView.frame = CGRect(x: tileSize, y: tileSize, width: screenWidth - (2 * tileSize), height: screenHeight - (2 * tileSize) )
 		
-		timeLeftLabel.frame = CGRectMake(tileSize, 0, screenWidth-(2*tileSize), tileSize)
-		timeTargetLabel.frame = CGRectMake(tileSize, 0, screenWidth-(2*tileSize), tileSize)
-		alarmLabel.frame = CGRectMake(tileSize, 0, screenWidth-(2*tileSize), tileSize)
+		timeLeftLabel.frame = CGRect(x: tileSize, y: 0, width: screenWidth-(2*tileSize), height: tileSize)
+		timeTargetLabel.frame = CGRect(x: tileSize, y: 0, width: screenWidth-(2*tileSize), height: tileSize)
+		alarmLabel.frame = CGRect(x: tileSize, y:screenHeight - (1 * tileSize) , width: screenWidth-(2*tileSize), height: tileSize)
 		
-		NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: Selector("templateGrid"), userInfo: nil, repeats: false)
+		Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(ViewController.templateGrid), userInfo: nil, repeats: false)
 	}
 	
 	func templateGrid()
@@ -163,23 +163,23 @@ class ViewController: UIViewController {
         var i = 1
 		while i < 24*4
 		{
-            let targetFrame:CGRect = CGRectMake(0, (templateLineSpacing * CGFloat(i)), screenWidth-(2*tileSize)+1, 1)
-            let initFrame:CGRect = CGRectMake(0, (templateLineSpacing * CGFloat(i)), 0, 1)
+            let targetFrame:CGRect = CGRect(x: 0, y: (templateLineSpacing * CGFloat(i)), width: screenWidth-(2*tileSize)+1, height: 1)
+            let initFrame:CGRect = CGRect(x: 0, y: (templateLineSpacing * CGFloat(i)), width: 0, height: 1)
 			let lineView = UIView(frame: initFrame)
 			
-			if i == 0 { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.1.png")!).colorWithAlphaComponent(0.5) }
-			else if i % 24 == 0 { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.3.png")!).colorWithAlphaComponent(0.5) }
-			else if i % 4 == 2 { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.1.png")!).colorWithAlphaComponent(0.5) }
-			else { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.1.png")!).colorWithAlphaComponent(0.5) }
+			if i == 0 { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.1.png")!).withAlphaComponent(0.5) }
+			else if i % 24 == 0 { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.3.png")!).withAlphaComponent(0.5) }
+			else if i % 4 == 2 { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.1.png")!).withAlphaComponent(0.5) }
+			else { lineView.backgroundColor = UIColor(patternImage:UIImage(named:"tile.1.png")!).withAlphaComponent(0.5) }
 			
 			self.gridView.addSubview(lineView)
             
             
             let duration = 0.5
-            let delay:NSTimeInterval = (0.01 * Double(i))
-            let options = UIViewAnimationOptions.CurveLinear
+            let delay:TimeInterval = (0.01 * Double(i))
+            let options = UIViewAnimationOptions.curveLinear
             
-            UIView.animateWithDuration(duration, delay: delay, options: options, animations: {
+            UIView.animate(withDuration: duration, delay: delay, options: options, animations: {
                 // any changes entered in this block will be animated
                 lineView.frame = targetFrame
             }, completion: nil)
@@ -191,7 +191,7 @@ class ViewController: UIViewController {
     
 	// MARK: - Touch
 	
-	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?)
+	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
 	{
         AudioServicesPlaySystemSound(touchSound)
         
@@ -200,25 +200,25 @@ class ViewController: UIViewController {
         }
         
 		for touch: AnyObject in touches {
-			let location = touch.locationInView(gridView)
+			let location = touch.location(in: gridView)
 			touchStart = location.y
 		}
 		
-		timerTouch = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: Selector("timeIncrementSmall"), userInfo: nil, repeats: true)
+		timerTouch = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(ViewController.timeIncrementSmall), userInfo: nil, repeats: true)
 		
 		timeIncrementSmall()
 		
-		timeLeftLabel.textColor = UIColor.grayColor()
+		timeLeftLabel.textColor = UIColor.gray
 	}
 	
-	override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)
+	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?)
 	{
         timerTouch.invalidate()
         timerTouch.invalidate()
         
 		for touch: AnyObject in touches
 		{
-			let location = touch.locationInView(gridView)
+			let location = touch.location(in: gridView)
 			let incrementStep = abs(touchStart - location.y)
 			
 			if touchStart > location.y { incrementMinutes += Int(incrementStep) }
@@ -232,10 +232,10 @@ class ViewController: UIViewController {
 			lineUpdate()
 		}
 		
-		timeLeftLabel.textColor = UIColor.grayColor()
+		timeLeftLabel.textColor = UIColor.gray
 	}
 	
-	override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)
+	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
     {
         AudioServicesPlaySystemSound(releaseSound!)
         
@@ -247,7 +247,7 @@ class ViewController: UIViewController {
 			alarmSetup()
 		}
 		
-		timeLeftLabel.textColor = UIColor.whiteColor()
+		timeLeftLabel.textColor = UIColor.white
 		
 		timeUpdate()
         lineUpdate()
@@ -257,22 +257,22 @@ class ViewController: UIViewController {
     
     func createTouchSound() -> SystemSoundID {
         var soundID: SystemSoundID = 0
-        let soundURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), "audio.touch", "wav", nil)
-        AudioServicesCreateSystemSoundID(soundURL, &soundID)
+        let soundURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), "audio.touch" as CFString, "wav" as CFString, nil)
+        AudioServicesCreateSystemSoundID(soundURL!, &soundID)
         return soundID
     }
     
     func createReleaseSound() -> SystemSoundID {
         var soundID: SystemSoundID = 1
-        let soundURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), "audio.release", "wav", nil)
-        AudioServicesCreateSystemSoundID(soundURL, &soundID)
+        let soundURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), "audio.release" as CFString, "wav" as CFString, nil)
+        AudioServicesCreateSystemSoundID(soundURL!, &soundID)
         return soundID
     }
     
     func createBarSound() -> SystemSoundID {
         var soundID: SystemSoundID = 0
-        let soundURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), "audio.bar", "mp3", nil)
-        AudioServicesCreateSystemSoundID(soundURL, &soundID)
+        let soundURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), "audio.bar" as CFString, "mp3" as CFString, nil)
+        AudioServicesCreateSystemSoundID(soundURL!, &soundID)
         return soundID
     }
     
@@ -287,13 +287,13 @@ class ViewController: UIViewController {
 	
 	func lineNowDraw()
 	{
-		let targetSeconds = (timeNow.hour * 60 * 60) + (timeNow.minute * 60) + timeNow.second
+		let targetSeconds = (timeNow.hour! * 60 * 60) + (timeNow.minute! * 60) + timeNow.second!
 		
-		var positionY = (24-CGFloat(timeNow.hour)) * templateLineSpacing * 4
+		var positionY = (24-CGFloat(timeNow.hour!)) * templateLineSpacing * 4
 		
-		if timeNow.minute >= 45 { positionY -= templateLineSpacing * 3  }
-		else if timeNow.minute >= 30 { positionY -= templateLineSpacing * 2  }
-		else if timeNow.minute >= 15 { positionY -= templateLineSpacing * 1  }
+		if timeNow.minute! >= 45 { positionY -= templateLineSpacing * 3  }
+		else if timeNow.minute! >= 30 { positionY -= templateLineSpacing * 2  }
+		else if timeNow.minute! >= 15 { positionY -= templateLineSpacing * 1  }
 		
 		let spaceToOccupy = screenWidth - (2 * tileSize)
 		
@@ -303,19 +303,19 @@ class ViewController: UIViewController {
 		var lineOrigin = CGFloat(percentGone) * spaceToOccupy
 		var lineWidth = CGFloat(Int(gridView.frame.size.width-lineOrigin))
 		
-		let fromMinutePos = ((timeNow.minute * 60) + timeNow.second) % 900
+		let fromMinutePos = ((timeNow.minute! * 60) + timeNow.second!) % 900
 		
 		// Doesnt take the whole line
 		if fromMinutePos + incrementMinutes < 900
 		{
-			let targetTimeThen = (timeThen.hour * 60 * 60) + (timeThen.minute * 60) + timeThen.second
+			let targetTimeThen = (timeThen.hour! * 60 * 60) + (timeThen.minute! * 60) + timeThen.second!
 			
 			let targetPercentGone = Float(targetTimeThen % 900)/900
 			var targetPosWidth = CGFloat(targetPercentGone) * spaceToOccupy
 			targetPosWidth = targetPosWidth - lineOrigin
 			
 			lineWidth = targetPosWidth
-			pointTarget.hidden = true
+			pointTarget.isHidden = true
 			
 		}
 		
@@ -325,38 +325,38 @@ class ViewController: UIViewController {
         
         lineOrigin = CGFloat(Int(lineOrigin))
 
-		pointNow.frame = CGRectMake(lineOrigin, positionY,lineWidth , 1)
+		pointNow.frame = CGRect(x: lineOrigin, y: positionY,width: lineWidth , height: 1)
         
-        markerNow.backgroundColor = UIColor.grayColor()
-        markerNow.frame = CGRectMake(tileSize * 0.75 * -1, positionY, tileSize/2, 1)
+        markerNow.backgroundColor = UIColor.gray
+        markerNow.frame = CGRect(x: tileSize * 0.75 * -1, y: positionY, width: tileSize/2, height: 1)
 	}
 	
 	func lineThenDraw()
 	{
 		// Draw Then
 		
-		let targetSeconds = (timeThen.hour * 60 * 60) + (timeThen.minute * 60) + timeThen.second
-		var positionY = (24-CGFloat(timeThen.hour)) * templateLineSpacing * 4
+		let targetSeconds = (timeThen.hour! * 60 * 60) + (timeThen.minute! * 60) + timeThen.second!
+		var positionY = (24-CGFloat(timeThen.hour!)) * templateLineSpacing * 4
 		
-		if timeThen.minute > 44 { positionY -= templateLineSpacing * 3  }
-		else if timeThen.minute > 29 { positionY -= templateLineSpacing * 2  }
-		else if timeThen.minute > 14 { positionY -= templateLineSpacing * 1  }
+		if timeThen.minute! > 44 { positionY -= templateLineSpacing * 3  }
+		else if timeThen.minute! > 29 { positionY -= templateLineSpacing * 2  }
+		else if timeThen.minute! > 14 { positionY -= templateLineSpacing * 1  }
 		
 		let spaceToOccupy = screenWidth - (2 * tileSize)
 		
 		let percentGone = Float(targetSeconds % 900)/900
 		let posWidth = CGFloat(percentGone) * spaceToOccupy
 		
-		pointTarget.frame = CGRectMake(0, positionY, posWidth, 1)
-		pointTarget.hidden = false
+		pointTarget.frame = CGRect(x: 0, y: positionY, width: posWidth, height: 1)
+		pointTarget.isHidden = false
 		
 		if pointTarget.frame.origin.y == pointNow.frame.origin.y
 		{
-			pointTarget.hidden = true
+			pointTarget.isHidden = true
 		}
         
-        markerTarget.backgroundColor = UIColor.grayColor()
-        markerTarget.frame = CGRectMake(tileSize * 0.75 * -1, positionY, tileSize/2, 1)
+        markerTarget.backgroundColor = UIColor.gray
+        markerTarget.frame = CGRect(x: tileSize * 0.75 * -1, y: positionY, width: tileSize/2, height: 1)
 	}
 	
 	func lineInbetweensDraw()
@@ -372,8 +372,8 @@ class ViewController: UIViewController {
 		while i < Int(numberOfLines) - 1
 		{
 			let positionY = pointTarget.frame.origin.y + ( CGFloat(i+1) * templateLineSpacing)
-			let lineView = UIView(frame: CGRectMake(0.0, positionY, screenWidth-(2*tileSize), 1))
-			lineView.backgroundColor = UIColor.whiteColor()
+			let lineView = UIView(frame: CGRect(x: 0.0, y: positionY, width: screenWidth-(2*tileSize), height: 1))
+			lineView.backgroundColor = UIColor.white
 			lineView.tag = 100
 			self.gridView.addSubview(lineView)
 			i = i + 1
@@ -389,7 +389,7 @@ class ViewController: UIViewController {
 		if( numberOfLines < 0 ){
 			
 			// Lines above
-			var limitLines = (24-CGFloat(timeNow.hour)) * templateLineSpacing * 4
+			var limitLines = (24-CGFloat(timeNow.hour!)) * templateLineSpacing * 4
             
 //            if timeNow.minute > 44 { limitLines = limitLines * 3 }
 //            else if timeNow.minute > 29 { limitLines = limitLines * 2  }
@@ -401,8 +401,8 @@ class ViewController: UIViewController {
 			{
 				let positionY = ((limitLines)) - ( CGFloat(1+i) * templateLineSpacing)
 				
-				let lineView = UIView(frame: CGRectMake(0.0, positionY, screenWidth-(2*tileSize), 1))
-				lineView.backgroundColor = UIColor.whiteColor()
+				let lineView = UIView(frame: CGRect(x: 0.0, y: positionY, width: screenWidth-(2*tileSize), height: 1))
+				lineView.backgroundColor = UIColor.white
 				lineView.tag = 100
 				if( positionY > (-1 * templateLineSpacing) + templateLineSpacing ){
 					self.gridView.addSubview(lineView)
@@ -411,15 +411,18 @@ class ViewController: UIViewController {
 				i += 1
 			}
 			
-			// Lines below
-			limitLines = (24 * 4 ) - ( (24-CGFloat(timeThen.hour)) * 4 )
+			// Lines below for swift 3 need to do latter
+			//limitLines = (24 * 4 ) - ( (24-CGFloat(timeThen.hour!)) * 4 )
+            let a = 24 * 4
+            let n = 24-CGFloat(timeThen.hour!)
+            limitLines = CGFloat((a)) - ( (n) * 4 )
 			i = 0
 			while i < Int(24*4)
 			{
 				let positionY = ((24*4*templateLineSpacing)) - ( CGFloat(1+i) * templateLineSpacing)
 				
-				let lineView = UIView(frame: CGRectMake(0.0, positionY, screenWidth-(2*tileSize), 1))
-				lineView.backgroundColor = UIColor.whiteColor()
+				let lineView = UIView(frame: CGRect(x: 0.0, y: positionY, width: screenWidth-(2*tileSize), height: 1))
+				lineView.backgroundColor = UIColor.white
 				lineView.tag = 100
 				if( positionY > pointTarget.frame.origin.y ){
 					self.gridView.addSubview(lineView)
@@ -431,7 +434,7 @@ class ViewController: UIViewController {
 		
 	}
 	
-	func touchValuePerc(nowVal: Float,maxVal: Float) -> Float
+	func touchValuePerc(_ nowVal: Float,maxVal: Float) -> Float
 	{
 		var posValue = nowVal/maxVal
 		
@@ -447,7 +450,7 @@ class ViewController: UIViewController {
 	{
 		NSLog("! ALARM | Set: %d", incrementMinutes)
 		
-		UIApplication.sharedApplication().cancelAllLocalNotifications()
+		UIApplication.shared.cancelAllLocalNotifications()
 		
 		let localNotification:UILocalNotification = UILocalNotification()
 		localNotification.alertAction = "turn off the alarm"
@@ -457,20 +460,20 @@ class ViewController: UIViewController {
 		else{
 			localNotification.alertBody = "◎"
 		}
-		let test:NSTimeInterval = NSTimeInterval(incrementMinutes)
-		localNotification.fireDate = NSDate(timeIntervalSinceNow: test)
+		let test:TimeInterval = TimeInterval(incrementMinutes)
+		localNotification.fireDate = Date(timeIntervalSinceNow: test)
 		localNotification.soundName = "alarm_tone.wav"
-		UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
+		UIApplication.shared.scheduleLocalNotification(localNotification)
 		
 		self.alarmLabel.text = "ALARM SET"
 		self.alarmLabel.alpha = 1
 		
-		UIView.animateWithDuration(1.0, delay: 1.5, options: .CurveEaseOut, animations: { self.alarmLabel.alpha = 0 }, completion: { finished in print("") })
+		UIView.animate(withDuration: 1.0, delay: 1.5, options: .curveEaseOut, animations: { self.alarmLabel.alpha = 0 }, completion: { finished in print("") })
 	}
 	
 	// MARK: - Misc
 	
-	override func prefersStatusBarHidden() -> Bool {
+	override var prefersStatusBarHidden : Bool {
 		return true
 	}
 
